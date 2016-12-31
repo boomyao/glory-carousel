@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>base</title>
+</head>
+<body>
+    <div id="myglory"></div>
+    <br/>
+    <button id="prevBtn">previous</button>
+    <button id="nextBtn">next</button>
+    <script src="../../glory-carousel.js"></script>
+    <script>
+        var images=['../images/001.jpg','../images/002.jpg','../images/003.jpg','../images/004.jpg','../images/005.jpg','../images/006.jpg']
+        var myglory=new GloryCarousel({
+            name:"myglory",
+            images:images,
+            sizeRate:7/20,
+            expendRate:10/13,
+            width:800,
+            height:200
+        })
+        var prevBtn=document.getElementById('prevBtn')
+        var nextBtn=document.getElementById('nextBtn')
+        prevBtn.onclick=function(){myglory.previous()}
+        nextBtn.onclick=function(){myglory.next()}
+    </script>
+</body>
+</html>
