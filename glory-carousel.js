@@ -6,15 +6,16 @@ function GloryCarousel(options) {
     if (!imgPaths) {
         throw "must provide parameter images";
     }
-    if (imgPaths.length < 4) {
+    if (imgPaths.length < 5) {
         throw "require more than 4 pictures";
     }
 
     var root, gloryInner;
-    var activeElmNo, items, canAnimate = true;
+    var activeElmNo, items, isAnimate = 0;
     var PZ = options.sizeRate || 9 / 16, PU = options.expendRate || 7 / 8;//图片比例，展开和常规比例
     var gloryWidth, gloryHeight, ITEM_W, ITEM_H, EX_W, EX_H, INNER_DEFAULT_LEFT;
-
+    var moveDuration = options.moveDuration|| 15, scaleDuration = options.scaleDuration|| 5;
+    var movePerVal = options.movePerVal|| 30, scalePerVal = options.scalePerVal|| 6;
     ///public methods
     //计算尺寸
     this.initSize = function (width, height) {
@@ -26,58 +27,25 @@ function GloryCarousel(options) {
             items[i].style.width = ITEM_W + 'px';
             items[i].style.height = ITEM_H + 'px';
         }
-        calcItemLeft(activeElmNo);
-        items[activeElmNo].style.left = INNER_DEFAULT_LEFT + 'px';
-        expand(items[activeElmNo]);
+        initPostion(activeElmNo);
     }
-    ////向右滚动
-    // this.next = function () {
-    //     if (canAnimate) {
-    //         canAnimate = false;
-    //         var hadDiff = 0;
-    //         var perVal = 15;
-    //         narrow(items[activeElmNo]);
-    //         if (activeElmNo < items.length - 1) { activeElmNo++; }
-    //         else { activeElmNo = 0; }
-    //         expand(items[activeElmNo]);
-    //         var timer = setInterval(function () {
-    //             gloryInner.style.left = gloryInner.offsetLeft - perVal + 'px';
-    //             hadDiff += perVal;
-    //             if (hadDiff >= ITEM_W) {
-    //                 clearInterval(timer);
-    //                 calcItemLeft(activeElmNo);
-    //                 gloryInner.style.left = 0;
-    //                 canAnimate = true;
-    //             }
-    //         }, 20)
-    //     }
-    // }
-    // //向左滚动
-    // this.previous = function () {
-    //     if (canAnimate) {
-    //         canAnimate = false;
-    //         var hadDiff = 0;
-    //         var perVal = 15;
-    //         narrow(items[activeElmNo]);
-    //         if (activeElmNo > 0) { activeElmNo--; }
-    //         else { activeElmNo = items.length - 1; }
-    //         expand(items[activeElmNo]);
-    //         var timer = setInterval(function () {
-    //             gloryInner.style.left = gloryInner.offsetLeft + perVal + 'px';
-    //             hadDiff += perVal;
-    //             if (hadDiff >= ITEM_W) {
-    //                 clearInterval(timer);
-    //                 calcItemLeft(activeElmNo);
-    //                 gloryInner.style.left = 0;
-    //                 canAnimate = true;
-    //             }
-    //         }, 20)
-    //     }
-    // }
-
+    function addAnimation(){
+        isAnimate++;
+    }
+    function rmAnimation(){
+        isAnimate--;
+    }
     this.next = function () {
-        if (canAnimate) {
-            canAnimate = false;
+        if (isAnimate==0) {
+            var moveItem=0;
+            if(activeElmNo==0){
+                moveItem=items.length-2;
+            }else if(activeElmNo==1){
+                moveItem=items.length-1;
+            }else{
+                moveItem=activeElmNo-2;
+            }
+            items[moveItem].style.left=items[moveItem].offsetLeft+items.length*ITEM_W+"px";
             narrow(items[activeElmNo])
             moveToLeft();
             if (activeElmNo < items.length - 1) { activeElmNo++; }
@@ -86,9 +54,10 @@ function GloryCarousel(options) {
         }
     }
 
-    this.previous=function(){
-        if (canAnimate) {
-            canAnimate = false;
+    this.previous = function () {
+        if (isAnimate==0) {
+            var moveItem=activeElmNo-3>=0?activeElmNo-3:activeElmNo-3+items.length;
+            items[moveItem].style.left=items[moveItem].offsetLeft-items.length*ITEM_W+"px";
             narrow(items[activeElmNo])
             moveToRight();
             if (activeElmNo > 0) { activeElmNo--; }
@@ -121,88 +90,102 @@ function GloryCarousel(options) {
             img.src = imgPaths[i];
             items[i].appendChild(img);
         }
-
     }
 
     function moveToLeft() {
+        addAnimation();
         var hadDiff = 0;
-        var perVal = 30;
         var timer = setInterval(function () {
-            if (ITEM_W - hadDiff < perVal) {
+            if (ITEM_W - hadDiff < movePerVal) {
                 gloryInner.style.left = gloryInner.offsetLeft - (ITEM_W - hadDiff) + 'px';
             } else {
-                gloryInner.style.left = gloryInner.offsetLeft - perVal + 'px';
+                gloryInner.style.left = gloryInner.offsetLeft - movePerVal + 'px';
             }
-            hadDiff += perVal;
+            hadDiff += movePerVal;
             if (hadDiff >= ITEM_W) {
                 clearInterval(timer);
-                calcItemLeft(activeElmNo);
-                gloryInner.style.left = 0;
+                rmAnimation();
             }
-        }, 15)
+        }, moveDuration)
     }
 
     function moveToRight() {
+        addAnimation();
         var hadDiff = 0;
-        var perVal = 30;
         var timer = setInterval(function () {
-            if (ITEM_W - hadDiff < perVal) {
+            if (ITEM_W - hadDiff < movePerVal) {
                 gloryInner.style.left = gloryInner.offsetLeft + (ITEM_W - hadDiff) + 'px';
             } else {
-                gloryInner.style.left = gloryInner.offsetLeft + perVal + 'px';
+                gloryInner.style.left = gloryInner.offsetLeft + movePerVal + 'px';
             }
-            hadDiff += perVal;
+            hadDiff += movePerVal;
             if (hadDiff >= ITEM_W) {
                 clearInterval(timer);
-                calcItemLeft(activeElmNo);
-                gloryInner.style.left = 0;
+                rmAnimation();
             }
-        }, 15)
+        }, moveDuration)
     }
 
     //缩小动作
-    function narrow(elm, callback) {
-        var perW = 6;
-        var perH = perW * PZ;
+    function narrow(elm) {
+        addAnimation();
+        var perW = scalePerVal;
         var exW = (1 - PU) * ITEM_W;
         var hadDiff = 0;
         var timer = setInterval(function () {
+            if (exW - hadDiff < perW) {
+                var leftW = exW - hadDiff;
+                elm.style.width = elm.offsetWidth - leftW + 'px';
+                elm.style.height = elm.offsetHeight - leftW * PZ + 'px';
+                elm.style.left = elm.offsetLeft + 0.5 * leftW + 'px';
+            } else {
+                elm.style.width = elm.offsetWidth - perW + 'px';
+                elm.style.height = elm.offsetHeight - perW * PZ + 'px';
+                elm.style.left = elm.offsetLeft + 0.5 * perW + 'px';
+            }
             hadDiff += perW;
-            elm.style.width = elm.offsetWidth - perW + 'px';
-            elm.style.height = elm.offsetHeight - perH + 'px';
-            elm.style.left = elm.offsetLeft + 0.5 * perW + 'px';
             if (hadDiff >= exW) {
                 clearInterval(timer);
                 elm.style.zIndex = 0;
+                rmAnimation()
             }
-        }, 5)
+        }, scaleDuration)
     }
     //放大动作
     function expand(elm) {
+        addAnimation();
         elm.style.zIndex = 10;
-        var perW = 6;
-        var perH = perW * PZ;
+        var perW = scalePerVal;
         var exW = (1 - PU) * ITEM_W;
-        //var diff = 30;
+        console.log(exW);
         var hadDiff = 0;
         var timer = setInterval(function () {
+            if (exW - hadDiff < perW) {
+                var leftW = exW - hadDiff;
+                elm.style.width = elm.offsetWidth + leftW + 'px';
+                elm.style.height = elm.offsetHeight + leftW * PZ + 'px';
+                elm.style.left = elm.offsetLeft - 0.5 * leftW + 'px';
+            } else {
+                elm.style.width = elm.offsetWidth + perW + 'px';
+                elm.style.height = elm.offsetHeight + perW * PZ + 'px';
+                elm.style.left = elm.offsetLeft - 0.5 * perW + 'px';
+            }
             hadDiff += perW;
-            elm.style.width = elm.offsetWidth + perW + 'px';
-            elm.style.height = elm.offsetHeight + perH + 'px';
-            elm.style.left = elm.offsetLeft - 0.5 * perW + 'px';
             if (hadDiff >= exW) {
                 clearInterval(timer);
-                canAnimate = true;
+                rmAnimation();
             }
-        }, 5)
+        }, scaleDuration)
     }
     //计算item位置
-    function calcItemLeft(n) {
-        for (var i = 0; i < items.length; i++) {
-            var x = Math.abs(n - i) < 3 ? n - i : n - i > 0 ? Math.abs(n - i) - items.length : Math.abs(Math.abs(n - i) - items.length);
-            items[i].style.left = (INNER_DEFAULT_LEFT - x * ITEM_W) + 'px';
+    function initPostion(n) {
+        for(var i =0; i<items.length;i++){
+            if(items.length-i<=2){
+                items[i].style.left=INNER_DEFAULT_LEFT-(items.length-i)*ITEM_W+"px";
+            }else{
+                items[i].style.left=INNER_DEFAULT_LEFT+i*ITEM_W+"px";
+            }
         }
-        items[n].style.left = INNER_DEFAULT_LEFT - (EX_W - ITEM_W) / 2 + 'px';
     }
 
     function randomColor() {
@@ -242,4 +225,5 @@ function GloryCarousel(options) {
     initElements();
     initStyles();
     this.initSize(options.width, options.height);
+    expand(items[activeElmNo])
 }
