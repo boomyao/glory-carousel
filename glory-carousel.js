@@ -10,85 +10,54 @@ function GloryCarousel(options) {
         throw "require more than 4 pictures";
     }
 
-    var root, gloryInner;
+    var root, gloryInner, dotBox, dots;
     var activeElmNo, items, isAnimate = 0;
-    var PZ = options.sizeRate || 9 / 16, PU = options.expendRate || 7 / 8;//图片比例，展开和常规比例
     var gloryWidth, gloryHeight, ITEM_W, ITEM_H, EX_W, EX_H, INNER_DEFAULT_LEFT;
-    var moveDuration = options.moveDuration|| 15, scaleDuration = options.scaleDuration|| 5;
-    var movePerVal = options.movePerVal|| 30, scalePerVal = options.scalePerVal|| 6;
+    var PZ = options.sizeRate || 9 / 16, PU = options.expendRate || 7 / 8;//图片比例，展开和常规比例
+    var moveDuration = options.moveDuration || 15, scaleDuration = options.scaleDuration || 5;
+    var movePerVal = options.movePerVal || 30, scalePerVal = options.scalePerVal || 6;
     ///public methods
     //计算尺寸
     this.initSize = function (width, height) {
-        calcBaseSize(width, height);
-        root.style.width = gloryWidth + 'px';
-        root.style.height = gloryHeight + 'px';
-        gloryInner.style.height = gloryHeight + 'px';
-        for (var i = 0; i < items.length; i++) {
-            items[i].style.width = ITEM_W + 'px';
-            items[i].style.height = ITEM_H + 'px';
-        }
-        initPostion(activeElmNo);
-    }
-    function addAnimation(){
-        isAnimate++;
-    }
-    function rmAnimation(){
-        isAnimate--;
+        initSize(width, height);
     }
     this.next = function () {
-        if (isAnimate==0) {
-            var moveItem=0;
-            if(activeElmNo==0){
-                moveItem=items.length-2;
-            }else if(activeElmNo==1){
-                moveItem=items.length-1;
-            }else{
-                moveItem=activeElmNo-2;
+        next();
+    }
+    this.previous = function () {
+        previous();
+    }
+
+    function next() {
+        if (isAnimate == 0) {
+            var moveItem = 0;
+            if (activeElmNo == 0) {
+                moveItem = items.length - 2;
+            } else if (activeElmNo == 1) {
+                moveItem = items.length - 1;
+            } else {
+                moveItem = activeElmNo - 2;
             }
-            items[moveItem].style.left=items[moveItem].offsetLeft+items.length*ITEM_W+"px";
+            items[moveItem].style.left = items[moveItem].offsetLeft + items.length * ITEM_W + "px";
             narrow(items[activeElmNo])
             moveToLeft();
             if (activeElmNo < items.length - 1) { activeElmNo++; }
             else { activeElmNo = 0; }
+            reRenderDots();
             expand(items[activeElmNo])
         }
     }
 
-    this.previous = function () {
-        if (isAnimate==0) {
-            var moveItem=activeElmNo-3>=0?activeElmNo-3:activeElmNo-3+items.length;
-            items[moveItem].style.left=items[moveItem].offsetLeft-items.length*ITEM_W+"px";
+    function previous() {
+        if (isAnimate == 0) {
+            var moveItem = activeElmNo - 3 >= 0 ? activeElmNo - 3 : activeElmNo - 3 + items.length;
+            items[moveItem].style.left = items[moveItem].offsetLeft - items.length * ITEM_W + "px";
             narrow(items[activeElmNo])
             moveToRight();
             if (activeElmNo > 0) { activeElmNo--; }
             else { activeElmNo = items.length - 1; }
+            reRenderDots();
             expand(items[activeElmNo])
-        }
-    }
-
-    ///private method
-    //生成html对象
-    function initElements() {
-        root = document.getElementById(options.name);
-        if (!root) {
-            throw "no exist called this name element,please create element called this name";
-        }
-        gloryInner = document.createElement("div");
-        gloryInner.className = "glory-inner";
-        root.appendChild(gloryInner);
-        calcBaseSize(options.width, options.height);
-        activeElmNo = 0;
-        for (var i = 0; i < imgPaths.length; i++) {
-            var gloryItem = document.createElement("div");
-            gloryItem.className = "glory-item";
-            gloryInner.appendChild(gloryItem);
-        }
-        items = document.getElementsByClassName('glory-item');
-        for (var i = 0; i < items.length; i++) {
-            var img = document.createElement("img");
-            img.style.width = img.style.height = "100%";
-            img.src = imgPaths[i];
-            items[i].appendChild(img);
         }
     }
 
@@ -157,7 +126,6 @@ function GloryCarousel(options) {
         elm.style.zIndex = 10;
         var perW = scalePerVal;
         var exW = (1 - PU) * ITEM_W;
-        console.log(exW);
         var hadDiff = 0;
         var timer = setInterval(function () {
             if (exW - hadDiff < perW) {
@@ -179,12 +147,30 @@ function GloryCarousel(options) {
     }
     //计算item位置
     function initPostion(n) {
-        for(var i =0; i<items.length;i++){
-            if(items.length-i<=2){
-                items[i].style.left=INNER_DEFAULT_LEFT-(items.length-i)*ITEM_W+"px";
-            }else{
-                items[i].style.left=INNER_DEFAULT_LEFT+i*ITEM_W+"px";
+        gloryInner.style.left = 0;
+        var orArr = [];
+        for (var i = 0; i < items.length; i++) {
+            n = n - items.length >= 0 ? n - items.length : n;
+            orArr[i] = n;
+            n++;
+        }
+        for (var i = 0; i < items.length; i++) {
+            if (items.length - i <= 2) {
+                items[orArr[i]].style.left = INNER_DEFAULT_LEFT - (items.length - i) * ITEM_W + "px";
+            } else {
+                items[orArr[i]].style.left = INNER_DEFAULT_LEFT + i * ITEM_W + "px";
             }
+        }
+    }
+
+    function initSize(width, height) {
+        calcBaseSize(width, height);
+        root.style.width = gloryWidth + 'px';
+        root.style.height = gloryHeight + 'px';
+        gloryInner.style.height = gloryHeight + 'px';
+        for (var i = 0; i < items.length; i++) {
+            items[i].style.width = ITEM_W + 'px';
+            items[i].style.height = ITEM_H + 'px';
         }
     }
 
@@ -198,19 +184,95 @@ function GloryCarousel(options) {
         var rgb = '#' + r + g + b;
         return rgb;
     }
-    //把css内容用js完成
-    function initStyles() {
-        root.style.position = "relative";
-        root.style.overflow = "hidden";
-        gloryInner.style.position = "relative";
-        gloryInner.style.fontSize = 0;
+
+    ///private method
+    //生成html对象
+    function initElements() {
+        root = document.getElementById(options.name);
+        if (!root) {
+            throw "no exist called this name element,please create element called this name";
+        }
+        root.className = "glorycarousel";
+        gloryInner = document.createElement("div");
+        gloryInner.className = "glory-inner";
+        root.appendChild(gloryInner);
+        calcBaseSize(options.width, options.height);
+        activeElmNo = 0;
+
+        for (var i = 0; i < imgPaths.length; i++) {
+            var gloryItem = document.createElement("div");
+            gloryItem.className = "glory-item";
+            gloryItem.style.backgroundColor = randomColor();
+            gloryInner.appendChild(gloryItem);
+        }
+        items = document.getElementsByClassName('glory-item');
         for (var i = 0; i < items.length; i++) {
-            items[i].style.backgroundColor = randomColor();
-            items[i].style.position = "absolute";
-            items[i].style.bottom = 0;
-            items[i].style.display = "inline-block";
+            var img = document.createElement("img");
+            img.style.width = img.style.height = "100%";
+            img.src = imgPaths[i];
+            items[i].appendChild(img);
+        }
+
+        dotBox = document.createElement("ul");
+        dotBox.className = "dot-box";
+        root.appendChild(dotBox);
+        for (var i = 0; i < items.length; i++) {
+            var dot = document.createElement('li');
+            dotBox.appendChild(dot);
+        }
+
+        dots = dotBox.querySelectorAll("li")
+        for (var i = 0; i < dots.length; i++) {
+            var dotSpan=document.createElement("span");
+            dots[i].appendChild(dotSpan);
+            (function (arg) {
+                dots[i].addEventListener("mouseenter", function () {
+                    if (activeElmNo != arg) {
+                        if (arg - activeElmNo == 1 || arg - activeElmNo == -items.length+1) {
+                            next();
+                        } else if (arg - activeElmNo == -1 || arg - activeElmNo == items.length-1) {
+                            previous();
+                        } else {
+                            activeElmNo = arg;
+                            reload();
+                        }
+                    }
+                })
+            })(i)
         }
     }
+
+    //把css内容用js完成
+    // function initStyles() {
+    //     // root.style.position = "relative";
+    //     // root.style.overflow = "hidden";
+    //     // gloryInner.style.position = "relative";
+    //     //gloryInner.style.fontSize = 0;
+    //     for (var i = 0; i < items.length; i++) {
+    //         items[i].style.backgroundColor = randomColor();
+    //         // items[i].style.position = "absolute";
+    //         // items[i].style.bottom = 0;
+    //         // items[i].style.display = "inline-block";
+    //         // items[i].style.zIndex = 0;
+    //     }
+    //     // dotBox.style.position = "absolute";
+    //     // dotBox.style.bottom = 0;
+    //     // dotBox.style.height = "20px";
+    //     // dotBox.style.width = "100%";
+    //     // dotBox.style.listStyle = "none";
+    //     // dotBox.style.textAlign = "center";
+    //     // dotBox.style.zIndex = 20;
+    //     // dotBox.style.margin = 0;
+    //     // dotBox.style.paddingLeft = 0;
+    //     //for (var i = 0; i < dots.length; i++) {
+    //         // dots[i].style.margin = "0 3px";
+    //         // dots[i].style.display = "inline-block";
+    //         // dots[i].style.width = "24px";
+    //         // dots[i].style.height = "2px";
+    //         // dots[i].style.backgroundColor = "#eee";
+    //     //}
+    //     //document.querySelector(".glorycarousel .dot-box .active").style.backgroundColor = dotColor;
+    // }
     //以组件长宽计算基础尺寸数值
     function calcBaseSize(width, height) {
         gloryWidth = width || 400;
@@ -222,8 +284,30 @@ function GloryCarousel(options) {
         INNER_DEFAULT_LEFT = (gloryWidth - ITEM_W) / 2;
     }
 
+    function addAnimation() {
+        isAnimate++;
+    }
+    function rmAnimation() {
+        isAnimate--;
+    }
+
+    function reRenderDots() {
+        for (var i = 0; i < dots.length; i++) {
+            if (i == activeElmNo) {
+                dots[i].className = "active";
+            } else {
+                dots[i].className = "";
+            }
+        }
+    }
+
+    function reload() {
+        reRenderDots();
+        initSize(options.width, options.height);
+        initPostion(activeElmNo);
+        expand(items[activeElmNo])
+    }
+
     initElements();
-    initStyles();
-    this.initSize(options.width, options.height);
-    expand(items[activeElmNo])
+    reload();
 }

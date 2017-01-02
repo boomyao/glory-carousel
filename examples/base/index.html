@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>base</title>
+    <link rel="stylesheet" href="../../glory-carousel.css">
 </head>
 <body>
     <div id="myglory"></div>
@@ -11,7 +12,7 @@
     <button id="nextBtn">next</button>
     <script src="../../glory-carousel.js"></script>
     <script>
-        var images=['../images/001.jpg','../images/002.jpg','../images/003.jpg','../images/004.jpg',"../images/005.jpg"]
+        var images=['../images/001.jpg','../images/002.jpg','../images/003.jpg','../images/004.jpg',"../images/005.jpg","../images/006.jpg"]
         var myglory=new GloryCarousel({
             name:"myglory",
             images:images,
@@ -19,7 +20,7 @@
             expendRate:10/13,
             width:800,
             height:200,
-            scaleDuration:10
+            scaleDuration:12
         })
         var prevBtn=document.getElementById('prevBtn')
         var nextBtn=document.getElementById('nextBtn')
