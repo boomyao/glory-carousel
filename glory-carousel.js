@@ -13,9 +13,10 @@ function GloryCarousel(options) {
     var root, gloryInner, dotBox, dots;
     var activeElmNo, items, isAnimate = 0;
     var gloryWidth, gloryHeight, ITEM_W, ITEM_H, EX_W, EX_H, INNER_DEFAULT_LEFT;
-    var PZ = options.sizeRate || 9 / 16, PU = options.expendRate || 7 / 8;//图片比例，展开和常规比例
+    var PZ = options.sizeRate || 7 / 20, PU = options.expendRate || 10 / 13;//图片比例，展开和常规比例
     var moveDuration = options.moveDuration || 15, scaleDuration = options.scaleDuration || 5;
     var movePerVal = options.movePerVal || 30, scalePerVal = options.scalePerVal || 6;
+    var autoScroll=options.autoScroll||false,scrollDuration=options.scrollDuration||3000;
     ///public methods
     //计算尺寸
     this.initSize = function (width, height) {
@@ -99,7 +100,7 @@ function GloryCarousel(options) {
     function narrow(elm) {
         addAnimation();
         var perW = scalePerVal;
-        var exW = (1 - PU) * ITEM_W;
+        var exW = EX_W - ITEM_W;
         var hadDiff = 0;
         var timer = setInterval(function () {
             if (exW - hadDiff < perW) {
@@ -125,12 +126,14 @@ function GloryCarousel(options) {
         addAnimation();
         elm.style.zIndex = 10;
         var perW = scalePerVal;
-        var exW = (1 - PU) * ITEM_W;
+        // var exW = (1 - PU) * ITEM_W;
+        var exW=EX_W-ITEM_W;
         var hadDiff = 0;
         var timer = setInterval(function () {
             if (exW - hadDiff < perW) {
                 var leftW = exW - hadDiff;
                 elm.style.width = elm.offsetWidth + leftW + 'px';
+                // elm.style.width=EX_W+"px";
                 elm.style.height = elm.offsetHeight + leftW * PZ + 'px';
                 elm.style.left = elm.offsetLeft - 0.5 * leftW + 'px';
             } else {
@@ -155,6 +158,7 @@ function GloryCarousel(options) {
             n++;
         }
         for (var i = 0; i < items.length; i++) {
+            items[orArr[i]].style.zIndex=0;
             if (items.length - i <= 2) {
                 items[orArr[i]].style.left = INNER_DEFAULT_LEFT - (items.length - i) * ITEM_W + "px";
             } else {
@@ -223,14 +227,14 @@ function GloryCarousel(options) {
 
         dots = dotBox.querySelectorAll("li")
         for (var i = 0; i < dots.length; i++) {
-            var dotSpan=document.createElement("span");
+            var dotSpan = document.createElement("span");
             dots[i].appendChild(dotSpan);
             (function (arg) {
                 dots[i].addEventListener("mouseenter", function () {
                     if (activeElmNo != arg) {
-                        if (arg - activeElmNo == 1 || arg - activeElmNo == -items.length+1) {
+                        if (arg - activeElmNo == 1 || arg - activeElmNo == -items.length + 1) {
                             next();
-                        } else if (arg - activeElmNo == -1 || arg - activeElmNo == items.length-1) {
+                        } else if (arg - activeElmNo == -1 || arg - activeElmNo == items.length - 1) {
                             previous();
                         } else {
                             activeElmNo = arg;
@@ -240,48 +244,32 @@ function GloryCarousel(options) {
                 })
             })(i)
         }
+
+        if(autoScroll){
+            setInterval(function(){next()},scrollDuration)
+        }
     }
 
-    //把css内容用js完成
-    // function initStyles() {
-    //     // root.style.position = "relative";
-    //     // root.style.overflow = "hidden";
-    //     // gloryInner.style.position = "relative";
-    //     //gloryInner.style.fontSize = 0;
-    //     for (var i = 0; i < items.length; i++) {
-    //         items[i].style.backgroundColor = randomColor();
-    //         // items[i].style.position = "absolute";
-    //         // items[i].style.bottom = 0;
-    //         // items[i].style.display = "inline-block";
-    //         // items[i].style.zIndex = 0;
-    //     }
-    //     // dotBox.style.position = "absolute";
-    //     // dotBox.style.bottom = 0;
-    //     // dotBox.style.height = "20px";
-    //     // dotBox.style.width = "100%";
-    //     // dotBox.style.listStyle = "none";
-    //     // dotBox.style.textAlign = "center";
-    //     // dotBox.style.zIndex = 20;
-    //     // dotBox.style.margin = 0;
-    //     // dotBox.style.paddingLeft = 0;
-    //     //for (var i = 0; i < dots.length; i++) {
-    //         // dots[i].style.margin = "0 3px";
-    //         // dots[i].style.display = "inline-block";
-    //         // dots[i].style.width = "24px";
-    //         // dots[i].style.height = "2px";
-    //         // dots[i].style.backgroundColor = "#eee";
-    //     //}
-    //     //document.querySelector(".glorycarousel .dot-box .active").style.backgroundColor = dotColor;
-    // }
     //以组件长宽计算基础尺寸数值
     function calcBaseSize(width, height) {
-        gloryWidth = width || 400;
-        gloryHeight = height || 100;
-        ITEM_W = gloryHeight * PU / PZ;
-        ITEM_H = gloryHeight * PU;
-        EX_W = ITEM_W / PU;
-        EX_H = ITEM_H / PU;
-        INNER_DEFAULT_LEFT = (gloryWidth - ITEM_W) / 2;
+        if (options.singleShow) {
+            gloryWidth=width||300;
+            gloryHeight=height||105;
+            EX_W=gloryWidth;
+            EX_H=gloryHeight;
+            ITEM_W=EX_W*PU;
+            ITEM_H=EX_H*PU;
+            INNER_DEFAULT_LEFT=(EX_W-ITEM_W)/2;
+        } else {
+            gloryWidth = width || 400;
+            gloryHeight = height || 100;
+            ITEM_W = gloryHeight * PU / PZ;
+            ITEM_H = gloryHeight * PU;
+            EX_W = ITEM_W / PU;
+            EX_H = ITEM_H / PU;
+            INNER_DEFAULT_LEFT = (gloryWidth - ITEM_W) / 2;
+        }
+
     }
 
     function addAnimation() {
@@ -289,6 +277,9 @@ function GloryCarousel(options) {
     }
     function rmAnimation() {
         isAnimate--;
+        if(isAnimate==0){
+            //initPostion(activeElmNo);
+        }
     }
 
     function reRenderDots() {
