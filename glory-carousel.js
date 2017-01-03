@@ -13,13 +13,13 @@ function GloryCarousel(options) {
     var _root, _gloryInner, _dotBox, _dots;
     var _activeElmNo, _items, _isAnimate = 0,_imc=0;
     var _gloryWidth, _gloryHeight, ITEM_W, ITEM_H, EX_W, EX_H, INNER_DEFAULT_LEFT;
-    var PZ = options.sizeRate || 7 / 20, PU = options.expendRate || 10 / 13;//图片比例，展开和常规比例
+    var PZ = options.sizeRate || 7 / 20, PU = options.scaleRate || 10 / 13;//图片比例，展开和常规比例
     var _moveDuration = options.moveDuration || 12, _scaleDuration = options.scaleDuration || 12;
     var _movePerVal = options.movePerVal || 30, _scalePerVal = options.scalePerVal || 6;
     var _autoScroll=options.autoScroll||false,_scrollDuration=options.scrollDuration||5000;
     ///public methods
     //计算尺寸
-    this.initSize = function (width, height) {
+    this.resize = function (width, height) {
         initSize(width, height);
     }
     this.next = function () {
