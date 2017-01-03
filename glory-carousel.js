@@ -10,13 +10,13 @@ function GloryCarousel(options) {
         throw "require more than 4 pictures";
     }
 
-    var root, gloryInner, dotBox, dots;
-    var activeElmNo, items, isAnimate = 0;
-    var gloryWidth, gloryHeight, ITEM_W, ITEM_H, EX_W, EX_H, INNER_DEFAULT_LEFT;
+    var _root, _gloryInner, _dotBox, _dots;
+    var _activeElmNo, _items, _isAnimate = 0,_imc=0;
+    var _gloryWidth, _gloryHeight, ITEM_W, ITEM_H, EX_W, EX_H, INNER_DEFAULT_LEFT;
     var PZ = options.sizeRate || 7 / 20, PU = options.expendRate || 10 / 13;//图片比例，展开和常规比例
-    var moveDuration = options.moveDuration || 15, scaleDuration = options.scaleDuration || 5;
-    var movePerVal = options.movePerVal || 30, scalePerVal = options.scalePerVal || 6;
-    var autoScroll=options.autoScroll||false,scrollDuration=options.scrollDuration||3000;
+    var _moveDuration = options.moveDuration || 12, _scaleDuration = options.scaleDuration || 12;
+    var _movePerVal = options.movePerVal || 30, _scalePerVal = options.scalePerVal || 6;
+    var _autoScroll=options.autoScroll||false,_scrollDuration=options.scrollDuration||5000;
     ///public methods
     //计算尺寸
     this.initSize = function (width, height) {
@@ -30,83 +30,87 @@ function GloryCarousel(options) {
     }
 
     function next() {
-        if (isAnimate == 0) {
+        if (_isAnimate == 0) {
             var moveItem = 0;
-            if (activeElmNo == 0) {
-                moveItem = items.length - 2;
-            } else if (activeElmNo == 1) {
-                moveItem = items.length - 1;
+            if (_activeElmNo == 0) {
+                moveItem = _items.length - 2;
+            } else if (_activeElmNo == 1) {
+                moveItem = _items.length - 1;
             } else {
-                moveItem = activeElmNo - 2;
+                moveItem = _activeElmNo - 2;
             }
-            items[moveItem].style.left = items[moveItem].offsetLeft + items.length * ITEM_W + "px";
-            narrow(items[activeElmNo])
+            _items[moveItem].style.left = _items[moveItem].offsetLeft + _items.length * ITEM_W + "px";
+            narrow(_items[_activeElmNo])
             moveToLeft();
-            if (activeElmNo < items.length - 1) { activeElmNo++; }
-            else { activeElmNo = 0; }
+            if (_activeElmNo < _items.length - 1) { _activeElmNo++; }
+            else { _activeElmNo = 0; }
             reRenderDots();
-            expand(items[activeElmNo])
+            expand(_items[_activeElmNo])
         }
     }
 
     function previous() {
-        if (isAnimate == 0) {
-            var moveItem = activeElmNo - 3 >= 0 ? activeElmNo - 3 : activeElmNo - 3 + items.length;
-            items[moveItem].style.left = items[moveItem].offsetLeft - items.length * ITEM_W + "px";
-            narrow(items[activeElmNo])
+        if (_isAnimate == 0) {
+            var moveItem = _activeElmNo - 3 >= 0 ? _activeElmNo - 3 : _activeElmNo - 3 + _items.length;
+            _items[moveItem].style.left = _items[moveItem].offsetLeft - _items.length * ITEM_W + "px";
+            narrow(_items[_activeElmNo])
             moveToRight();
-            if (activeElmNo > 0) { activeElmNo--; }
-            else { activeElmNo = items.length - 1; }
+            if (_activeElmNo > 0) { _activeElmNo--; }
+            else { _activeElmNo = _items.length - 1; }
             reRenderDots();
-            expand(items[activeElmNo])
+            expand(_items[_activeElmNo])
         }
     }
 
     function moveToLeft() {
         addAnimation();
+        _imc--;
         var hadDiff = 0;
         var timer = setInterval(function () {
-            if (ITEM_W - hadDiff < movePerVal) {
-                gloryInner.style.left = gloryInner.offsetLeft - (ITEM_W - hadDiff) + 'px';
+            if (ITEM_W - hadDiff < _movePerVal) {
+                _gloryInner.style.left = _gloryInner.offsetLeft - (ITEM_W - hadDiff) + 'px';
             } else {
-                gloryInner.style.left = gloryInner.offsetLeft - movePerVal + 'px';
+                _gloryInner.style.left = _gloryInner.offsetLeft - _movePerVal + 'px';
             }
-            hadDiff += movePerVal;
+            hadDiff += _movePerVal;
             if (hadDiff >= ITEM_W) {
                 clearInterval(timer);
                 rmAnimation();
+                //_gloryInner.style.left=_gloryInner.offsetLeft-_gloryInner.offsetLeft%ITEM_W+"px";
             }
-        }, moveDuration)
+        }, _moveDuration)
     }
 
     function moveToRight() {
         addAnimation();
+        _imc++;
         var hadDiff = 0;
         var timer = setInterval(function () {
-            if (ITEM_W - hadDiff < movePerVal) {
-                gloryInner.style.left = gloryInner.offsetLeft + (ITEM_W - hadDiff) + 'px';
+            if (ITEM_W - hadDiff < _movePerVal) {
+                _gloryInner.style.left = _gloryInner.offsetLeft + (ITEM_W - hadDiff) + 'px';
             } else {
-                gloryInner.style.left = gloryInner.offsetLeft + movePerVal + 'px';
+                _gloryInner.style.left = _gloryInner.offsetLeft + _movePerVal + 'px';
             }
-            hadDiff += movePerVal;
+            hadDiff += _movePerVal;
             if (hadDiff >= ITEM_W) {
                 clearInterval(timer);
                 rmAnimation();
             }
-        }, moveDuration)
+        }, _moveDuration)
     }
 
     //缩小动作
     function narrow(elm) {
         addAnimation();
-        var perW = scalePerVal;
+        var perW = _scalePerVal;
         var exW = EX_W - ITEM_W;
         var hadDiff = 0;
         var timer = setInterval(function () {
             if (exW - hadDiff < perW) {
                 var leftW = exW - hadDiff;
-                elm.style.width = elm.offsetWidth - leftW + 'px';
-                elm.style.height = elm.offsetHeight - leftW * PZ + 'px';
+                //elm.style.width = elm.offsetWidth - leftW + 'px';
+                elm.style.width=ITEM_W+"px";
+                elm.style.height = ITEM_H + 'px';
                 elm.style.left = elm.offsetLeft + 0.5 * leftW + 'px';
             } else {
                 elm.style.width = elm.offsetWidth - perW + 'px';
@@ -119,22 +123,22 @@ function GloryCarousel(options) {
                 elm.style.zIndex = 0;
                 rmAnimation()
             }
-        }, scaleDuration)
+        }, _scaleDuration)
     }
     //放大动作
     function expand(elm) {
         addAnimation();
         elm.style.zIndex = 10;
-        var perW = scalePerVal;
+        var perW = _scalePerVal;
         // var exW = (1 - PU) * ITEM_W;
         var exW=EX_W-ITEM_W;
         var hadDiff = 0;
         var timer = setInterval(function () {
             if (exW - hadDiff < perW) {
                 var leftW = exW - hadDiff;
-                elm.style.width = elm.offsetWidth + leftW + 'px';
-                // elm.style.width=EX_W+"px";
-                elm.style.height = elm.offsetHeight + leftW * PZ + 'px';
+                //elm.style.width = elm.offsetWidth + leftW + 'px';
+                elm.style.width=EX_W+"px";
+                elm.style.height = EX_H + 'px';
                 elm.style.left = elm.offsetLeft - 0.5 * leftW + 'px';
             } else {
                 elm.style.width = elm.offsetWidth + perW + 'px';
@@ -146,35 +150,36 @@ function GloryCarousel(options) {
                 clearInterval(timer);
                 rmAnimation();
             }
-        }, scaleDuration)
+        }, _scaleDuration)
     }
     //计算item位置
     function initPostion(n) {
-        gloryInner.style.left = 0;
+        _gloryInner.style.left = 0;
+        _imc=0; 
         var orArr = [];
-        for (var i = 0; i < items.length; i++) {
-            n = n - items.length >= 0 ? n - items.length : n;
+        for (var i = 0; i < _items.length; i++) {
+            n = n - _items.length >= 0 ? n - _items.length : n;
             orArr[i] = n;
             n++;
         }
-        for (var i = 0; i < items.length; i++) {
-            items[orArr[i]].style.zIndex=0;
-            if (items.length - i <= 2) {
-                items[orArr[i]].style.left = INNER_DEFAULT_LEFT - (items.length - i) * ITEM_W + "px";
+        for (var i = 0; i < _items.length; i++) {
+            _items[orArr[i]].style.zIndex=0;
+            if (_items.length - i <= 2) {
+                _items[orArr[i]].style.left = INNER_DEFAULT_LEFT - (_items.length - i) * ITEM_W + "px";
             } else {
-                items[orArr[i]].style.left = INNER_DEFAULT_LEFT + i * ITEM_W + "px";
+                _items[orArr[i]].style.left = INNER_DEFAULT_LEFT + i * ITEM_W + "px";
             }
         }
     }
 
     function initSize(width, height) {
         calcBaseSize(width, height);
-        root.style.width = gloryWidth + 'px';
-        root.style.height = gloryHeight + 'px';
-        gloryInner.style.height = gloryHeight + 'px';
-        for (var i = 0; i < items.length; i++) {
-            items[i].style.width = ITEM_W + 'px';
-            items[i].style.height = ITEM_H + 'px';
+        _root.style.width = _gloryWidth + 'px';
+        _root.style.height = _gloryHeight + 'px';
+        _gloryInner.style.height = _gloryHeight + 'px';
+        for (var i = 0; i < _items.length; i++) {
+            _items[i].style.width = ITEM_W + 'px';
+            _items[i].style.height = ITEM_H + 'px';
         }
     }
 
@@ -192,52 +197,52 @@ function GloryCarousel(options) {
     ///private method
     //生成html对象
     function initElements() {
-        root = document.getElementById(options.name);
-        if (!root) {
+        _root = document.getElementById(options.name);
+        if (!_root) {
             throw "no exist called this name element,please create element called this name";
         }
-        root.className = "glorycarousel";
-        gloryInner = document.createElement("div");
-        gloryInner.className = "glory-inner";
-        root.appendChild(gloryInner);
+        _root.className = "glorycarousel";
+        _gloryInner = document.createElement("div");
+        _gloryInner.className = "glory-inner";
+        _root.appendChild(_gloryInner);
         calcBaseSize(options.width, options.height);
-        activeElmNo = 0;
+        _activeElmNo = 0;
 
         for (var i = 0; i < imgPaths.length; i++) {
             var gloryItem = document.createElement("div");
             gloryItem.className = "glory-item";
             gloryItem.style.backgroundColor = randomColor();
-            gloryInner.appendChild(gloryItem);
+            _gloryInner.appendChild(gloryItem);
         }
-        items = document.getElementsByClassName('glory-item');
-        for (var i = 0; i < items.length; i++) {
+        _items = document.getElementsByClassName('glory-item');
+        for (var i = 0; i < _items.length; i++) {
             var img = document.createElement("img");
             img.style.width = img.style.height = "100%";
             img.src = imgPaths[i];
-            items[i].appendChild(img);
+            _items[i].appendChild(img);
         }
 
-        dotBox = document.createElement("ul");
-        dotBox.className = "dot-box";
-        root.appendChild(dotBox);
-        for (var i = 0; i < items.length; i++) {
+        _dotBox = document.createElement("ul");
+        _dotBox.className = "dot-box";
+        _root.appendChild(_dotBox);
+        for (var i = 0; i < _items.length; i++) {
             var dot = document.createElement('li');
-            dotBox.appendChild(dot);
+            _dotBox.appendChild(dot);
         }
 
-        dots = dotBox.querySelectorAll("li")
-        for (var i = 0; i < dots.length; i++) {
+        _dots = _dotBox.querySelectorAll("li")
+        for (var i = 0; i < _dots.length; i++) {
             var dotSpan = document.createElement("span");
-            dots[i].appendChild(dotSpan);
+            _dots[i].appendChild(dotSpan);
             (function (arg) {
-                dots[i].addEventListener("mouseenter", function () {
-                    if (activeElmNo != arg) {
-                        if (arg - activeElmNo == 1 || arg - activeElmNo == -items.length + 1) {
+                _dots[i].addEventListener("mouseenter", function () {
+                    if (_activeElmNo != arg) {
+                        if (arg - _activeElmNo == 1 || arg - _activeElmNo == -_items.length + 1) {
                             next();
-                        } else if (arg - activeElmNo == -1 || arg - activeElmNo == items.length - 1) {
+                        } else if (arg - _activeElmNo == -1 || arg - _activeElmNo == _items.length - 1) {
                             previous();
                         } else {
-                            activeElmNo = arg;
+                            _activeElmNo = arg;
                             reload();
                         }
                     }
@@ -245,49 +250,49 @@ function GloryCarousel(options) {
             })(i)
         }
 
-        if(autoScroll){
-            setInterval(function(){next()},scrollDuration)
+        if(_autoScroll){
+            var timer=setInterval(function(){next()},_scrollDuration)
         }
     }
 
     //以组件长宽计算基础尺寸数值
     function calcBaseSize(width, height) {
         if (options.singleShow) {
-            gloryWidth=width||300;
-            gloryHeight=height||105;
-            EX_W=gloryWidth;
-            EX_H=gloryHeight;
+            _gloryWidth=width||300;
+            _gloryHeight=height||105;
+            EX_W=_gloryWidth;
+            EX_H=_gloryHeight;
             ITEM_W=EX_W*PU;
             ITEM_H=EX_H*PU;
             INNER_DEFAULT_LEFT=(EX_W-ITEM_W)/2;
         } else {
-            gloryWidth = width || 400;
-            gloryHeight = height || 100;
-            ITEM_W = gloryHeight * PU / PZ;
-            ITEM_H = gloryHeight * PU;
+            _gloryWidth = width || 400;
+            _gloryHeight = height || 100;
+            ITEM_W = _gloryHeight * PU / PZ;
+            ITEM_H = _gloryHeight * PU;
             EX_W = ITEM_W / PU;
             EX_H = ITEM_H / PU;
-            INNER_DEFAULT_LEFT = (gloryWidth - ITEM_W) / 2;
+            INNER_DEFAULT_LEFT = (_gloryWidth - ITEM_W) / 2;
         }
 
     }
 
     function addAnimation() {
-        isAnimate++;
+        _isAnimate++;
     }
     function rmAnimation() {
-        isAnimate--;
-        if(isAnimate==0){
-            //initPostion(activeElmNo);
+        _isAnimate--;
+        if(_isAnimate==0){
+            _gloryInner.style.left=_imc*ITEM_W+"px"
         }
     }
 
     function reRenderDots() {
-        for (var i = 0; i < dots.length; i++) {
-            if (i == activeElmNo) {
-                dots[i].className = "active";
+        for (var i = 0; i < _dots.length; i++) {
+            if (i == _activeElmNo) {
+                _dots[i].className = "active";
             } else {
-                dots[i].className = "";
+                _dots[i].className = "";
             }
         }
     }
@@ -295,8 +300,8 @@ function GloryCarousel(options) {
     function reload() {
         reRenderDots();
         initSize(options.width, options.height);
-        initPostion(activeElmNo);
-        expand(items[activeElmNo])
+        initPostion(_activeElmNo);
+        expand(_items[_activeElmNo])
     }
 
     initElements();
