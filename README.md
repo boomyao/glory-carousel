@@ -2,7 +2,7 @@
 ## 介绍
 一款简单的带滑动动画效果的滚动图插件
 ## 怎么使用
-1. 引用文件
+1 引用文件
 
 `<link rel="stylesheet" href="glory-carousel.css"/>`
 
@@ -12,11 +12,11 @@
 
 `<script src="glory-carousel-bundle-min.js"></script>`
 
-2. 添加标签
+2 添加标签
 
 `<div id="myGlory"></div>`
 
-3. js调用
+3 js调用
 `var glory=new GloryCarousel(
     {
         name:"myGlory",
