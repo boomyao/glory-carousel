@@ -13,9 +13,11 @@
 `<script src="glory-carousel-bundle-min.js"></script>`
 
 2. 添加标签
+
 `<div id="myGlory"></div>`
 
-3. `var glory=new GloryCarousel(
+3. js调用
+`var glory=new GloryCarousel(
     {
         name:"myGlory",
         images:[url1,url2,url3,url4,url5,...],
