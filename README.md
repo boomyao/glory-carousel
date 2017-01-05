@@ -4,13 +4,9 @@
 ## 怎么使用
 1 引用文件
 
-`<link rel="stylesheet" href="glory-carousel.css"/>`
+`<link rel="stylesheet" href="glory-carousel.min.css"/>`
 
-`<script src="glory-carousel-min.js"></script>`
-
-或者
-
-`<script src="glory-carousel-bundle-min.js"></script>`
+`<script src="glory-carousel.min.js"></script>`
 
 2 添加标签
 

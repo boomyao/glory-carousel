@@ -1,0 +1,33 @@
+{
+  "name": "glory-carousel",
+  "version": "1.0.0",
+  "description": "",
+  "main": "glory-carousel.js",
+  "directories": {
+    "example": "examples"
+  },
+  "dependencies": {
+    "gulp": "^3.9.1"
+  },
+  "devDependencies": {
+    "gulp-concat": "^2.6.1",
+    "gulp-jshint": "^2.0.4",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.0.0",
+    "jshint": "^2.9.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boomyao/glory-carousel.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/boomyao/glory-carousel/issues"
+  },
+  "homepage": "https://github.com/boomyao/glory-carousel#readme"
+}
