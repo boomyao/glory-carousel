@@ -214,7 +214,7 @@ function GloryCarousel(options) {
             gloryItem.style.backgroundColor = randomColor();
             _gloryInner.appendChild(gloryItem);
         }
-        _items = document.getElementsByClassName('glory-item');
+        _items=_root.getElementsByClassName('glory-item');
         for (var i = 0; i < _items.length; i++) {
             var img = document.createElement("img");
             img.style.width = img.style.height = "100%";

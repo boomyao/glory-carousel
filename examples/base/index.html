@@ -12,6 +12,11 @@
     <br/>
     <button id="prevBtn">previous</button>
     <button id="nextBtn">next</button>
+    <br/>
+    <div id="myglory2"></div>
+    <br/>
+    <button id="prevBtn2">previous</button>
+    <button id="nextBtn2">next</button>
     <script src="../../glory-carousel.js"></script>
     <script>
         var images = ['../images/001.jpg', '../images/002.jpg', '../images/003.jpg', '../images/004.jpg', "../images/005.jpg", "../images/006.jpg"]
@@ -27,6 +32,16 @@
         var nextBtn = document.getElementById('nextBtn')
         prevBtn.onclick = function () { myglory.previous() }
         nextBtn.onclick = function () { myglory.next() }
+
+        var myglory2=new GloryCarousel({
+            name:"myglory2",
+            images:images,
+            singleShow:true
+        })
+        var prevBtn2 = document.getElementById('prevBtn2')
+        var nextBtn2 = document.getElementById('nextBtn2')
+        prevBtn2.onclick = function () { myglory2.previous() }
+        nextBtn2.onclick = function () { myglory2.next() }
     </script>
 </body>
 
